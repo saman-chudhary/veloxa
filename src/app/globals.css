@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-dark text-light font-body;
+}
+
+::selection {
+  background: #FFD54A;
+  color: #111318;
+}
+
+.text-outline {
+  -webkit-text-stroke: 1px #FFD54A;
+  color: transparent;
+}
+
+.diagonal-clip {
+  clip-path: polygon(0 0, 100% 0, 100% 92%, 0 100%);
+}
+
+.diagonal-clip-bottom {
+  clip-path: polygon(0 8%, 100% 0, 100% 100%, 0 100%);
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 22s linear infinite;
+}
+
+:focus-visible {
+  outline: 2px solid #FFD54A;
+  outline-offset: 2px;
+}
+
+/* react-day-picker brand overrides */
+.rdp-veloxa {
+  --rdp-accent-color: #FFD54A;
+  --rdp-background-color: rgba(255, 213, 74, 0.15);
+  --rdp-accent-color-dark: #FFD54A;
+  --rdp-outline: 2px solid #FFD54A;
+  color: #F5F5F5;
+}
+.rdp-veloxa .rdp-day_disabled {
+  opacity: 0.25;
+}
+

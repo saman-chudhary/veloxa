@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ListingType {
+  SALE
+  RENTAL
+  BOTH
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
+  REFUNDED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  passwordHash  String?
+  createdAt     DateTime  @default(now())
+  orders        Order[]
+  bookings      RentalBooking[]
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String
+  slug     String    @unique
+  products Product[]
+}
+
+model Brand {
+  id       String    @id @default(cuid())
+  name     String
+  slug     String    @unique
+  products Product[]
+}
+
+model Product {
+  id            String        @id @default(cuid())
+  slug          String        @unique
+  name          String
+  description   String
+  type          ListingType   @default(SALE)
+  salePriceCents   Int?
+  rentalPriceCents Int?       // price per day
+  weightKg      Float?
+  material      String?
+  frameSize     String?
+  color         String?
+  images        String[]
+  categoryId    String
+  category      Category      @relation(fields: [categoryId], references: [id])
+  brandId       String
+  brand         Brand         @relation(fields: [brandId], references: [id])
+  stock         Int           @default(1)
+  featured      Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  orderItems    OrderItem[]
+  bookings      RentalBooking[]
+  blockedDates  BlockedDate[]
+}
+
+// Dates a rental bike is unavailable (already booked or under maintenance)
+model BlockedDate {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  date      DateTime
+  reason    String?  @default("booked")
+
+  @@unique([productId, date])
+}
+
+model RentalBooking {
+  id          String        @id @default(cuid())
+  productId   String
+  product     Product       @relation(fields: [productId], references: [id])
+  userId      String?
+  user        User?         @relation(fields: [userId], references: [id])
+  customerName  String
+  customerEmail String
+  startDate   DateTime
+  endDate     DateTime
+  totalCents  Int
+  status      BookingStatus @default(PENDING)
+  createdAt   DateTime      @default(now())
+}
+
+model Order {
+  id                String      @id @default(cuid())
+  userId            String?
+  user              User?       @relation(fields: [userId], references: [id])
+  customerEmail     String
+  stripeSessionId   String?     @unique
+  totalCents        Int
+  status            OrderStatus @default(PENDING)
+  items             OrderItem[]
+  createdAt         DateTime    @default(now())
+}
+
+model OrderItem {
+  id         String  @id @default(cuid())
+  orderId    String
+  order      Order   @relation(fields: [orderId], references: [id])
+  productId  String
+  product    Product @relation(fields: [productId], references: [id])
+  quantity   Int     @default(1)
+  priceCents Int
+}
