@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { products, categories, brands, ListingType } from "@/lib/data";
 import ProductCard from "@/components/product-card";
 
-export default function ShopPage() {
+function ShopContent() {
   const searchParams = useSearchParams();
   const initialType = (searchParams.get("type") as ListingType | null) ?? "ALL";
 
@@ -112,5 +112,13 @@ export default function ShopPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ShopPage() {
+  return (
+    <Suspense fallback={<div className="mx-auto max-w-7xl px-6 py-16 text-light/50">Loading...</div>}>
+      <ShopContent />
+    </Suspense>
   );
 }

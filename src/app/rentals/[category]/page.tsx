@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { MapPin, Phone, Clock } from "lucide-react";
 import { rentalCategories, getRentalCategory } from "@/lib/rental-categories";
@@ -21,7 +22,9 @@ export default function RentalCategoryPage({ params }: { params: { category: str
         <div className="relative h-80 md:h-[560px] rounded-2xl overflow-hidden">
           <Image src={category.heroImage} alt={category.name} fill priority className="object-cover" />
         </div>
-        <CategoryBookingPanel slug={category.slug} />
+        <Suspense fallback={<div className="text-light/50">Loading booking form...</div>}>
+          <CategoryBookingPanel slug={category.slug} />
+        </Suspense>
       </section>
 
       {/* WHY CHOOSE US */}
